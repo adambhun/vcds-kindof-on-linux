@@ -1,0 +1,23 @@
+version: "3"
+services:
+  windows:
+    image: dockurr/windows
+    container_name: windows-81
+    devices:
+      - /dev/kvm
+      # 001 marks the port, 016 marks the device, which is a different number for each connection
+      # - /dev/bus/usb # ! using this is not an option
+      - /dev/bus/usb/<PORT>/<DEVICE>
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006 # web browser interface
+      - 3389:3389/tcp # RDP, optional
+      - 3389:3389/udp # RDP, optional
+    stop_grace_period: 2m
+    restart: on-failure
+    volumes:
+      - ./storage:/storage
+    environment:
+      VERSION: "win81" # I suppose other versions of Windows could work as well.
+      ARGUMENTS: "-device usb-host,vendorid=0x<VENDOR_ID>,productid=0x<PRODUCT_ID>" # ! these are hexadecimal. Add the 0x if only the last 4 chars are displayed by lsusb
